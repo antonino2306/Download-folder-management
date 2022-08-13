@@ -1,3 +1,4 @@
+from email.mime import audio
 from genericpath import exists
 from itertools import count
 from os import rename, scandir
@@ -17,6 +18,16 @@ image_dir = "/home/antonino/Scaricati/Immagini"
 video_dir = "/home/antonino/Scaricati/Video"
 audio_dir = "/home/antonino/Scaricati/Audio"
 docs_dir = "/home/antonino/Scaricati/Docs"
+
+
+image_ext = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".raw" ".webp", ".bmp"]
+
+video_ext = [".webm", ".mpg", ".mpeg", ".mpe", ".mpv", ".mp4", ".mp4v", ".m4v", ".avi", ".wmv", ".mov"]
+
+audio_ext = [".m4a", ".flac", "mp3", ".wav", ".wma", ".aac"]
+
+docs_ext = [".doc", ".docx", ".odt", ".pdf", ".ods", ".xls", ".xlsx", ".ppt", ".pptx"]
+
 
 def make_unique(dest, name):
     filename, extension = splitext(name)
@@ -45,22 +56,26 @@ class MoveHandler(FileSystemEventHandler):
             for element in source_dir:
                 name = element.name
                 destination_dir = download_dir
-
-                if name.endswith(".jpg") or name.endswith(".jpeg") or name.endswith(".png"):
-                    destination_dir = image_dir
-                    move_file(element, destination_dir, name)
-
-                elif name.endswith(".docx") or name.endswith(".pdf") or name.endswith(".xlsx"):
-                    destination_dir = docs_dir
-                    move_file(element, destination_dir, name)
                 
-                elif name.endswith(".mp3") or name.endswith(".waw"):
-                    destination_dir = audio_dir
-                    move_file(element, destination_dir, name)
+                for ext in image_ext:
+                    if name.endswith(ext) or name.endswith(ext.upper()):
+                        destination_dir = image_dir
+                        move_file(element, destination_dir, name)
+
+                for ext in docs_ext:
+                    if name.endswith(ext) or name.endswith(ext.upper()):
+                        destination_dir = docs_dir
+                        move_file(element, destination_dir, name)
                 
-                elif name.endswith(".mp4") or name.endswith(".avi") or name.endswith(".webm"):
-                    destination_dir = video_dir
-                    move_file(element, destination_dir, name)
+                for ext in audio_ext:
+                    if name.endswith(ext) or name.endswith(ext.upper()):
+                        destination_dir = audio_dir
+                        move_file(element, destination_dir, name)
+
+                for ext in video_ext:                    
+                    if name.endswith(ext) or name.endswith(ext.upper()):
+                        destination_dir = video_dir
+                        move_file(element, destination_dir, name)
 
 
 
