@@ -1,9 +1,14 @@
-from os import scandir, path
+from genericpath import exists
+from itertools import count
+from os import rename, scandir
+from os.path import join, splitext
 import sys
 import time
 import logging
 from shutil import move
 from tracemalloc import start
+from typing import Counter
+from unicodedata import name
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -13,18 +18,24 @@ video_dir = "/home/antonino/Scaricati/Video"
 audio_dir = "/home/antonino/Scaricati/Audio"
 docs_dir = "/home/antonino/Scaricati/Docs"
 
+def make_unique(dest, name):
+    filename, extension = splitext(name)
+    counter = 1
+    # * IF FILE EXISTS, ADDS NUMBER TO THE END OF THE FILENAME
+    while exists(f"{dest}/{name}"):
+        name = f"{filename}-{str(counter)}{extension}"
+        counter += 1
 
-def move_file(start_dir, end_dir, file_name):
-    files_list = []
-    with scandir(end_dir) as destination:
-        for element in destination:
-            if element.is_file():
-                files_list.append(element.name)
-    
-    if file_name in files_list:
-        print("Error")
-    else:
-        move(start_dir, end_dir)
+    return name
+
+
+def move_file(file_, dest, name):
+    if exists(f"{dest}/{name}"):
+        unique_name = make_unique(dest, name)
+        oldName = join(dest, name)
+        newName = join(dest, unique_name)
+        rename(oldName, newName)
+    move(file_, dest)
 
 
     
